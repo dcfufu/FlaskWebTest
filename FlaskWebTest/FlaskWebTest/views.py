@@ -37,29 +37,31 @@ def about():
 
 @app.route('/getData',methods=['GET', 'POST'])
 def getData():
+    #get count value c from request get
     c = int(request.values['count'])
+
+    #Queue
     q = Queue()
+
+    #result list
     datas = []
+
+    #thread list
     threads = []
+
+    #create multi thread to process job and add to Queue
     for i in range(c):
         threads.append(threading.Thread(target = setJob, args = (i,q)))
         threads[i].start()
         
+    #whait all of the thread to complete job
     for thread in threads:
         thread.join()
 
+    #get data form queue
     for _ in range(c):
         datas += q.get()
 
-    return json.dumps(datas)
-
-@app.route('/getDataB')
-def getDataB():
-    #data = request.values['username']
-    datas.clear()
-    for i in range(10):
-        setJob(10)
-        
     return json.dumps(datas)
 
 def setJob(count,q):
