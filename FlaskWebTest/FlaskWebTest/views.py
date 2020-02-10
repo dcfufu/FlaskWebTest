@@ -10,6 +10,7 @@ import json
 import threading
 import random
 from queue import Queue
+import concurrent.futures
 
 @app.route('/')
 @app.route('/home')
@@ -70,3 +71,30 @@ def setJob(count,q):
     time.sleep(random.randint(1,5))
     print('{0}*****OK'.format(str(count)))
     q.put(temp)
+
+
+@app.route('/testA',methods=['GET', 'POST'])
+def testA():
+    c = int(request.values['count'])
+    FIBS = [28, 10, 20, 20, 23, 30, 10, 30]
+    result=[]
+    print('start')
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+       for number, fib_value in zip(FIBS, executor.map(fib, FIBS)):
+            print("%d's fib number is %d" % (number, fib_value))
+    return str(result)
+
+@app.route('/testB',methods=['GET', 'POST'])
+def testB():
+    c = int(request.values['count'])
+    FIBS = [28, 10, 20, 20, 23, 30, 10, 30]
+    result=[]
+    print('start')
+    for i in range(len(FIBS)):
+        print('{0}s fib number is {1}'.format(str(FIBS[i]), str(fib(FIBS[i]))))
+    return str(result)
+    
+def fib(n):
+    if n < 2:
+        return 1
+    return fib(n - 1) + fib(n - 2)
